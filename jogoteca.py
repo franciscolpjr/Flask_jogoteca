@@ -23,15 +23,6 @@ db = MySQL(app)
 jogo_dao_db = JogoDao(db)
 usuario_dao_db = UsuarioDao(db)
 
-usuario1 = Usuario('chico','Francisco Lazaro','mestre')
-usuario2 = Usuario('luan','Luan Raniel','1234')
-usuario3 = Usuario('lucas','Lucas Rafael','54321')
-
-#Guardar os usuários em um dicionário onde a chave será o id do usuário
-usuarios = { usuario1.id:usuario1,
-             usuario2.id:usuario2,
-             usuario3.id:usuario3 }
-
 #Index
 @app.route('/')
 def index():
@@ -71,11 +62,11 @@ def login():
 #autenticar
 @app.route('/autenticar',methods=['POST',])
 def autenticar():
-    if request.form['usuario'] in usuarios:
-        dadosUser = usuarios[request.form['usuario']]
-        if dadosUser.senha == request.form['senha']:
+    usuario = usuario_dao_db.buscar_por_id(request.form['usuario'])
+    if usuario:
+        if usuario.senha == request.form['senha']:
             session['usuario_logado'] = dadosUser.id
-            flash(dadosUser.nome + ' logado com sucesso!')
+            flash(usuario.nome + ' logado com sucesso!')
             proxima_pagina = request.form['proxima']
             #return redirect('/{}'.format(proxima_pagina))
             return redirect(proxima_pagina)
