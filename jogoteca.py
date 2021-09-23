@@ -65,7 +65,7 @@ def autenticar():
     usuario = usuario_dao_db.buscar_por_id(request.form['usuario'])
     if usuario:
         if usuario.senha == request.form['senha']:
-            session['usuario_logado'] = dadosUser.id
+            session['usuario_logado'] = usuario.id
             flash(usuario.nome + ' logado com sucesso!')
             proxima_pagina = request.form['proxima']
             #return redirect('/{}'.format(proxima_pagina))
@@ -82,6 +82,28 @@ def logout():
     flash('Nenhum usuário logado.')
     #return redirect('/login')
     return redirect(url_for('login'))
+
+#Renderizar página Editar.html
+@app.route('/editar/<int:id>')
+def editar(id):
+    if (session['usuario_logado'] != None and session['usuario_logado'] != ''):
+        jogo = jogo_dao_db.busca_por_id(id)
+        return render_template('editar.html', titulo='Editar Jogo', jogo=jogo)
+    else:
+        # após o login quero que retorne para a tela de editar
+        # return redirect('/login?proxima=editar')
+        return redirect(url_for('editar', proxima='editar'))
+
+#rota de entrada do formulário do editar.html
+@app.route('/update', methods=['POST',])
+def update():
+    nome = request.form['nome']
+    categoria = request.form['categoria']
+    console = request.form['console']
+    id = request.form['id']
+    jogo = Jogo(nome,categoria,console,id)
+    jogo_dao_db.salvar(jogo)
+    return redirect(url_for('index'))
 
 #debug=True - Ambiente de Dev
 app.run(debug=True)
