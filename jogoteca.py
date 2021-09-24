@@ -105,6 +105,18 @@ def update():
     jogo_dao_db.salvar(jogo)
     return redirect(url_for('index'))
 
+@app.route('/apagar/<int:id>')
+def apagar(id):
+    if (session['usuario_logado'] != None and session['usuario_logado'] != ''):
+        jogo = jogo_dao_db.busca_por_id(id)
+        jogo_dao_db.deletar(jogo.id)
+        return redirect(url_for('index'))
+    else:
+        # após o login quero que retorne para a tela de editar
+        # return redirect('/login?proxima=editar')
+        return redirect(url_for('login'))
+
+
 #debug=True - Ambiente de Dev
 app.run(debug=True)
 
