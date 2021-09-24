@@ -110,6 +110,7 @@ def apagar(id):
     if (session['usuario_logado'] != None and session['usuario_logado'] != ''):
         jogo = jogo_dao_db.busca_por_id(id)
         jogo_dao_db.deletar(jogo.id)
+        flash("O jogo - " + jogo.nome + " foi removido com sucesso.")
         return redirect(url_for('index'))
     else:
         # após o login quero que retorne para a tela de editar
