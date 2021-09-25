@@ -6,6 +6,8 @@ from dao import JogoDao,UsuarioDao
 from flask_mysqldb import MySQL
 #Models
 from models import Jogo,Usuario
+#Caminho para pasta img
+import os
 
 app = Flask(__name__)
 
@@ -22,6 +24,10 @@ db = MySQL(app)
 
 jogo_dao_db = JogoDao(db)
 usuario_dao_db = UsuarioDao(db)
+
+#caminho para pasta de uploads - img
+#__file__ é o caminho para o jogoteca.py
+app.config['UPLOAD_PATH'] = os.path.dirname(os.path.abspath(__file__)) + '/img'
 
 #Index
 @app.route('/')
@@ -48,9 +54,15 @@ def input():
     jogo = Jogo(nome, categoria, console)
     #lista.append(jogo)
     #Usando o JogoDao para salvar o dado no BD
-    jogo_dao_db.salvar(jogo)
+    jogo = jogo_dao_db.salvar(jogo)
     #return render_template('lista.html', titulo='Jogos', jogos=lista)
     #return redirect('/')
+
+    #upload imagem
+    arquivo = request.files['arquivo'] #arquivo.filename
+    nome_arquivo = jogo.id
+    pasta_img = app.config['UPLOAD_PATH']
+    arquivo.save(f'{pasta_img}/{nome_arquivo}.jpg')
     return redirect(url_for('index'))
 
 #tela login
